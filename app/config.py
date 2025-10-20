@@ -22,6 +22,17 @@ class Settings(BaseSettings):
 
     # Deployment
     port: int = 8080
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Handle PORT environment variable for Railway/cloud deployment
+        import os
+        port_env = os.getenv('PORT')
+        if port_env:
+            try:
+                self.port = int(port_env)
+            except ValueError:
+                pass  # Keep default port if PORT is invalid
 
 
 settings = Settings()
