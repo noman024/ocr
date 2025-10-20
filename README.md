@@ -365,20 +365,25 @@ The API automatically detects and configures Tesseract OCR in Railway's environm
    - **Error**: `pip: command not found`
    - **Solution**: Railway now includes explicit Python setup in `nixpacks.toml`
    - **Files**: `.python-version`, `pyproject.toml` help with detection
-   - **Fallback**: Dockerfile available if nixpacks fails
+   - **Fallback**: Simplified Dockerfile available if nixpacks fails
 
-2. **Build Failures**:
+2. **Docker Package Issues**:
+   - **Error**: `Package 'libgl1-mesa-glx' has no installation candidate`
+   - **Solution**: Simplified Dockerfile with only essential tesseract packages
+   - **Packages**: Only `tesseract-ocr` and `tesseract-ocr-eng` for minimal dependencies
+
+3. **Build Failures**:
    - Check Railway logs for Nix package installation errors
    - Verify `nixpacks.toml` configuration
    - Ensure Python 3.11 compatibility
    - Try switching to Docker build if nixpacks fails
 
-3. **Tesseract Issues**:
+4. **Tesseract Issues**:
    - Check logs for Tesseract path configuration
    - Verify OCR service initialization
    - Test with health check endpoint
 
-4. **Performance**:
+5. **Performance**:
    - Monitor Railway metrics for memory/CPU usage
    - Check rate limiting and caching statistics
    - Review processing time logs
