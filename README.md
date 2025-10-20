@@ -1,6 +1,6 @@
 # OCR Image Text Extraction API
 
-A FastAPI-based OCR service that extracts text from uploaded images using Tesseract OCR engine. Deployable locally or to any cloud platform.
+A production-ready FastAPI-based OCR service that extracts text from uploaded images using Tesseract OCR engine. Optimized for Railway deployment with comprehensive features and robust error handling.
 
 ## Features
 
@@ -13,6 +13,8 @@ A FastAPI-based OCR service that extracts text from uploaded images using Tesser
 - **Error Handling**: Comprehensive error handling and validation
 - **Health Checks**: Built-in health monitoring
 - **Mock Mode**: Fallback to mock OCR when Tesseract is unavailable
+- **Railway Optimized**: Configured for Railway deployment with automatic Tesseract installation
+- **Path Auto-Detection**: Automatically finds Tesseract binary in various system locations
 
 ## API Endpoints
 
@@ -126,86 +128,98 @@ docker build -t ocr-api .
 docker run -p 8080:8080 ocr-api
 ```
 
-## Deployment Options
+## Deployment
 
-### Option 1: Local Deployment with Public Tunnel
+### Railway Deployment (Recommended)
 
-1. **Install ngrok (if available):**
-```bash
-# Download from: https://ngrok.com/download
-# Or try: sudo snap install ngrok
-```
+This API is optimized for Railway deployment with automatic Tesseract OCR installation.
 
-2. **Deploy locally with tunnel:**
-```bash
-./deploy.sh
-```
-
-### Option 2: Deploy to Railway (Recommended - Free)
-
-1. **Create GitHub repository:**
-```bash
-git init
-git add .
-git commit -m "Initial OCR API commit"
-git remote add origin https://github.com/yourusername/ocr-api.git
-git push -u origin main
-```
-
-2. **Deploy to Railway:**
+1. **Deploy to Railway:**
    - Go to: https://railway.app
    - Sign up with GitHub
    - Click "New Project" → "Deploy from GitHub repo"
-   - Select your repository
+   - Select your repository: `noman024/ocr`
    - Railway will automatically detect the Python app and deploy
 
-3. **Set environment variables in Railway:**
-   - `PORT=8080`
-   - `MAX_FILE_SIZE_BYTES=10485760`
+2. **Railway Configuration:**
+   - **Build System**: Nixpacks (configured in `nixpacks.toml`)
+   - **Tesseract Installation**: Automatic via Nix packages
+   - **Python Version**: 3.11 (specified in `runtime.txt`)
+   - **Start Command**: Configured in `Procfile`
 
-### Option 3: Deploy to Render (Free Tier)
+3. **Environment Variables (Optional):**
+   - `MAX_FILE_SIZE_BYTES=10485760` (10MB)
+   - `RATE_LIMIT_REQUESTS=60`
+   - `CACHE_TTL_SECONDS=600`
 
-1. **Create GitHub repository** (same as above)
+### Local Development
 
-2. **Deploy to Render:**
-   - Go to: https://render.com
-   - Sign up with GitHub
-   - Click "New" → "Web Service"
-   - Connect your repository
-   - Set build command: `pip install -r requirements.txt`
-   - Set start command: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-
-### Option 4: Deploy to Heroku
-
-1. **Install Heroku CLI:**
+1. **Install Tesseract:**
 ```bash
-curl https://cli-assets.heroku.com/install.sh | sh
+# Ubuntu/Debian
+sudo apt-get install tesseract-ocr tesseract-ocr-eng
+
+# macOS
+brew install tesseract
+
+# Windows
+# Download from: https://github.com/UB-Mannheim/tesseract/wiki
 ```
 
-2. **Deploy:**
+2. **Run locally:**
 ```bash
-heroku create your-ocr-api-name
-git push heroku main
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the API
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
+
+### Alternative Cloud Platforms
+
+- **Render**: Connect GitHub repo, set build/start commands
+- **Heroku**: Use included `Procfile` for deployment
+- **Docker**: Use included `Dockerfile` for containerized deployment
 
 ## Testing
 
-### Using curl
+### Railway Deployment Testing
+
+Once deployed to Railway, you'll get a public URL like `https://your-app-name.railway.app`
 
 ```bash
+# Health check
+curl https://your-app-name.railway.app/health
+
 # Single image
 curl -X POST \
   -F "image=@sample_images/text_sample.jpg" \
-  https://your-service-url/extract-text
+  https://your-app-name.railway.app/extract-text
 
 # Batch processing
 curl -X POST \
   -F "images=@sample_images/text_sample.jpg" \
   -F "images=@sample_images/document_sample.jpg" \
-  https://your-service-url/extract-text/batch
+  https://your-app-name.railway.app/extract-text/batch
 
+# Cache statistics
+curl https://your-app-name.railway.app/cache/stats
+```
+
+### Local Testing
+
+```bash
 # Health check
-curl https://your-service-url/health
+curl http://localhost:8080/health
+
+# Single image
+curl -X POST \
+  -F "image=@sample_images/text_sample.jpg" \
+  http://localhost:8080/extract-text
 ```
 
 ### Using Python
@@ -213,10 +227,17 @@ curl https://your-service-url/health
 ```python
 import requests
 
+# Railway deployment
+base_url = "https://your-app-name.railway.app"
+
+# Health check
+response = requests.get(f"{base_url}/health")
+print(response.json())
+
 # Single image
 with open('sample_images/text_sample.jpg', 'rb') as f:
     files = {'image': f}
-    response = requests.post('https://your-service-url/extract-text', files=files)
+    response = requests.post(f'{base_url}/extract-text', files=files)
     print(response.json())
 
 # Batch processing
@@ -224,9 +245,14 @@ files = []
 for filename in ['text_sample.jpg', 'document_sample.jpg']:
     files.append(('images', open(f'sample_images/{filename}', 'rb')))
 
-response = requests.post('https://your-service-url/extract-text/batch', files=files)
+response = requests.post(f'{base_url}/extract-text/batch', files=files)
 print(response.json())
 ```
+
+### Interactive API Documentation
+
+- **Railway**: `https://your-app-name.railway.app/docs`
+- **Local**: `http://localhost:8080/docs`
 
 ## Configuration
 
@@ -322,10 +348,39 @@ README.md          # This file
 
 MIT License - see LICENSE file for details.
 
+## Railway-Specific Features
+
+### Automatic Tesseract Configuration
+
+The API automatically detects and configures Tesseract OCR in Railway's environment:
+
+- **Binary Detection**: Searches common Tesseract installation paths
+- **Tessdata Configuration**: Sets up language data paths
+- **Fallback Mode**: Gracefully falls back to mock OCR if Tesseract unavailable
+- **Logging**: Comprehensive logging for debugging deployment issues
+
+### Railway Deployment Troubleshooting
+
+1. **Build Failures**:
+   - Check Railway logs for Nix package installation errors
+   - Verify `nixpacks.toml` configuration
+   - Ensure Python 3.11 compatibility
+
+2. **Tesseract Issues**:
+   - Check logs for Tesseract path configuration
+   - Verify OCR service initialization
+   - Test with health check endpoint
+
+3. **Performance**:
+   - Monitor Railway metrics for memory/CPU usage
+   - Check rate limiting and caching statistics
+   - Review processing time logs
+
 ## Support
 
 For issues and questions:
 1. Check the Railway deployment logs
-2. Verify Tesseract OCR installation
+2. Verify Tesseract OCR installation and configuration
 3. Test with sample images provided
 4. Check rate limiting and caching status
+5. Review Railway metrics and performance
