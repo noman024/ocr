@@ -361,17 +361,24 @@ The API automatically detects and configures Tesseract OCR in Railway's environm
 
 ### Railway Deployment Troubleshooting
 
-1. **Build Failures**:
+1. **Python Detection Issues**:
+   - **Error**: `pip: command not found`
+   - **Solution**: Railway now includes explicit Python setup in `nixpacks.toml`
+   - **Files**: `.python-version`, `pyproject.toml` help with detection
+   - **Fallback**: Dockerfile available if nixpacks fails
+
+2. **Build Failures**:
    - Check Railway logs for Nix package installation errors
    - Verify `nixpacks.toml` configuration
    - Ensure Python 3.11 compatibility
+   - Try switching to Docker build if nixpacks fails
 
-2. **Tesseract Issues**:
+3. **Tesseract Issues**:
    - Check logs for Tesseract path configuration
    - Verify OCR service initialization
    - Test with health check endpoint
 
-3. **Performance**:
+4. **Performance**:
    - Monitor Railway metrics for memory/CPU usage
    - Check rate limiting and caching statistics
    - Review processing time logs
