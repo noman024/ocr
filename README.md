@@ -38,9 +38,10 @@ A production-ready FastAPI service that extracts text from uploaded images using
 ```
 
 #### Error Codes
-- `400`: Bad Request (invalid file format, missing file)
+- `200`: Success (health check, successful OCR)
+- `400`: Bad Request (invalid file format, no content type)
 - `413`: Payload Too Large (file exceeds 10MB limit)
-- `422`: Unprocessable Entity (OCR processing failed)
+- `422`: Unprocessable Entity (missing required field, OCR processing failed)
 - `429`: Too Many Requests (rate limit exceeded)
 - `500`: Internal Server Error
 
@@ -83,15 +84,32 @@ curl -X POST -F "image=@test_image.jpg" https://web-production-f8dc.up.railway.a
 - **Repository:** <https://github.com/noman024/ocr>
 - **Structure:**
   ```
-  app/
-  ├── main.py          # FastAPI application
-  ├── config.py        # Configuration settings
-  ├── models.py        # Pydantic models
-  ├── ocr.py          # OCR service integration
-  ├── utils.py        # Utility functions
-  ├── rate_limit.py   # Rate limiting
-  ├── cache.py        # Caching logic
-  └── logging_setup.py # Logging configuration
+  .
+  ├── app/
+  │   ├── __init__.py
+  │   ├── main.py          # FastAPI application
+  │   ├── config.py        # Configuration settings
+  │   ├── models.py        # Pydantic models
+  │   ├── ocr.py          # OCR service integration
+  │   ├── utils.py        # Utility functions
+  │   ├── rate_limit.py   # Rate limiting
+  │   ├── cache.py        # Caching logic
+  │   └── logging_setup.py # Logging configuration
+  ├── sample_images/
+  │   ├── text_sample.jpg
+  │   ├── document_sample.jpg
+  │   ├── low_contrast.jpg
+  │   ├── mixed_content.jpg
+  │   ├── no_text.jpg
+  │   ├── test_gif.gif
+  │   └── create_samples.py
+  ├── tests/
+  │   ├── __init__.py
+  │   └── test_api.py
+  ├── Dockerfile
+  ├── requirements.txt
+  ├── railway.toml
+  └── README.md
   ```
 
 #### Dockerfile
@@ -112,6 +130,7 @@ curl -X POST -F "image=@test_image.jpg" https://web-production-f8dc.up.railway.a
 - **low_contrast.jpg:** Edge case testing
 - **mixed_content.jpg:** Complex content handling
 - **no_text.jpg:** No-text scenario testing
+- **test_gif.gif:** GIF format testing 
 - **create_samples.py:** Image generation script
 
 ## 📋 Requirements Met
