@@ -236,7 +236,7 @@ The API can be configured using environment variables:
 - `RATE_LIMIT_WINDOW_SECONDS`: Rate limit window (default: 60)
 - `CACHE_TTL_SECONDS`: Cache TTL (default: 600)
 - `CACHE_MAX_ITEMS`: Maximum cache items (default: 512)
-- `VISION_TIMEOUT_SECONDS`: Vision API timeout (default: 15)
+- `OCR_TIMEOUT_SECONDS`: OCR processing timeout (default: 15)
 
 ## Error Codes
 
@@ -268,10 +268,10 @@ The API can be configured using environment variables:
 
 ## Cost Optimization
 
-- **Free Tier**: 1,000 Vision API units/month
+- **Free Tier**: Unlimited Tesseract OCR processing
 - **Cloud Run**: 2 million requests/month free
-- **Caching**: Reduces Vision API calls for duplicate images
-- **Mock Mode**: Fallback when Vision API is unavailable
+- **Caching**: Reduces OCR processing for duplicate images
+- **Mock Mode**: Fallback when Tesseract OCR is unavailable
 
 ## Security
 
@@ -324,7 +324,7 @@ MIT License - see LICENSE file for details.
 ## Support
 
 For issues and questions:
-1. Check the logs in Google Cloud Console
-2. Verify Vision API quotas and billing
+1. Check the Railway deployment logs
+2. Verify Tesseract OCR installation
 3. Test with sample images provided
 4. Check rate limiting and caching status

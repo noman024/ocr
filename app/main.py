@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # Create FastAPI app
 app = FastAPI(
     title="OCR Image Text Extraction API",
-    description="Extract text from images using Google Cloud Vision API",
+    description="Extract text from images using Tesseract OCR",
     version="1.0.0"
 )
 

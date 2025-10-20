@@ -79,7 +79,7 @@ class OCRService:
         
         # Return mock text based on image size
         if width > 1000 and height > 1000:
-            mock_text = "This is a mock OCR result for a large image. In production, this would be replaced with actual text extraction from Google Cloud Vision API."
+            mock_text = "This is a mock OCR result for a large image. In production, this would be replaced with actual text extraction from Tesseract OCR."
         elif width > 500:
             mock_text = "Mock OCR result for medium image."
         else:
