@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["tesseract", "tesseract-data"]
+nixPkgs = ["tesseract", "tesseract-data", "leptonica"]
 
 [phases.install]
 cmds = ["pip install -r requirements.txt"]
@@ -9,3 +9,6 @@ cmds = ["echo 'Build complete'"]
 
 [start]
 cmd = "python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+[variables]
+PYTHON_VERSION = "3.11"
