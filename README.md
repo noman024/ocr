@@ -25,10 +25,12 @@ POST /extract-text
 ```
 
 **Request:**
+
 - Content-Type: `multipart/form-data`
 - Field: `image` (JPG, PNG, or GIF file, max 10MB)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -47,15 +49,18 @@ POST /extract-text
 ```
 
 ### Batch Processing
+
 ```bash
 POST /extract-text/batch
 ```
 
 **Request:**
+
 - Content-Type: `multipart/form-data`
 - Field: `images` (multiple image files, max 10 per batch)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -71,11 +76,13 @@ POST /extract-text/batch
 ```
 
 ### Health Check
+
 ```bash
 GET /health
 ```
 
 ### Cache Management
+
 ```bash
 GET /cache/stats
 DELETE /cache/clear
@@ -86,15 +93,17 @@ DELETE /cache/clear
 ### Local Development
 
 1. **Clone and setup:**
+
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/noman024/ocr.git
 cd ocr
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-2. **Install Tesseract OCR:**
+1. **Install Tesseract OCR:**
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get install tesseract-ocr tesseract-ocr-eng
@@ -106,12 +115,14 @@ brew install tesseract
 # Download from: https://github.com/UB-Mannheim/tesseract/wiki
 ```
 
-3. **Run locally:**
+1. **Run locally:**
+
 ```bash
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
 ```
 
-4. **Test the API:**
+1. **Test the API:**
+
 ```bash
 curl -X POST -F "image=@sample_images/text_sample.jpg" http://localhost:8080/extract-text
 ```
@@ -119,11 +130,13 @@ curl -X POST -F "image=@sample_images/text_sample.jpg" http://localhost:8080/ext
 ### Docker
 
 1. **Build the image:**
+
 ```bash
 docker build -t ocr-api .
 ```
 
-2. **Run the container:**
+1. **Run the container:**
+
 ```bash
 docker run -p 8080:8080 ocr-api
 ```
@@ -135,7 +148,7 @@ docker run -p 8080:8080 ocr-api
 This API is containerized with Docker for reliable deployment.
 
 1. **Deploy to Railway:**
-   - Go to: https://railway.app
+   - Go to: <https://railway.app>
    - Sign up with GitHub
    - Click "New Project" → "Deploy from GitHub repo"
    - Select your repository: `noman024/ocr`
@@ -152,9 +165,10 @@ This API is containerized with Docker for reliable deployment.
    - `RATE_LIMIT_REQUESTS=60`
    - `CACHE_TTL_SECONDS=600`
 
-### Local Development
+### Local Setup
 
 1. **Install Tesseract:**
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get install tesseract-ocr tesseract-ocr-eng
@@ -166,7 +180,8 @@ brew install tesseract
 # Download from: https://github.com/UB-Mannheim/tesseract/wiki
 ```
 
-2. **Run locally:**
+1. **Run locally:**
+
 ```bash
 # Create virtual environment
 python3 -m venv .venv
@@ -324,7 +339,7 @@ pytest tests/ -v
 
 ### Code Structure
 
-```
+```text
 app/
 ├── __init__.py
 ├── main.py          # FastAPI application
@@ -387,6 +402,7 @@ The API automatically detects and configures Tesseract OCR in containerized envi
 ## Support
 
 For issues and questions:
+
 1. Check the deployment logs (Railway, Docker, etc.)
 2. Verify Tesseract OCR installation and configuration
 3. Test with sample images provided
