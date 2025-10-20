@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
-    title="OCR Image Text Extraction API",
+    title=settings.app_name,
     description="Extract text from images using Tesseract OCR",
-    version="1.0.0"
+    version=settings.version
 )
 
 # Add CORS middleware

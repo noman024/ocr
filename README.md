@@ -12,7 +12,7 @@ A production-ready FastAPI-based OCR service that extracts text from uploaded im
 - **Metadata Extraction**: Get image dimensions, format, and text block information
 - **Error Handling**: Comprehensive error handling and validation
 - **Health Checks**: Built-in health monitoring
-- **Mock Mode**: Fallback to mock OCR when Tesseract is unavailable
+- **Production Ready**: Robust error handling and logging
 - **Docker Containerized**: Standard Docker deployment for any cloud platform
 - **Path Auto-Detection**: Automatically finds Tesseract binary in various system locations
 
@@ -315,7 +315,7 @@ The API can be configured using environment variables:
 - **Free Tier**: Unlimited Tesseract OCR processing
 - **Cloud Run**: 2 million requests/month free
 - **Caching**: Reduces OCR processing for duplicate images
-- **Mock Mode**: Fallback when Tesseract OCR is unavailable
+- **Production Ready**: Robust error handling and logging
 
 ## Security
 
@@ -373,7 +373,7 @@ The API automatically detects and configures Tesseract OCR in containerized envi
 
 - **Binary Detection**: Searches common Tesseract installation paths
 - **Tessdata Configuration**: Sets up language data paths
-- **Fallback Mode**: Gracefully falls back to mock OCR if Tesseract unavailable
+- **Error Handling**: Graceful error handling with detailed logging
 - **Logging**: Comprehensive logging for debugging deployment issues
 
 ### Deployment Troubleshooting
@@ -398,6 +398,23 @@ The API automatically detects and configures Tesseract OCR in containerized envi
    - Monitor container metrics for memory/CPU usage
    - Check rate limiting and caching statistics
    - Review processing time logs
+
+## Live API
+
+**🚀 Production API:** <https://web-production-f8dc.up.railway.app/>
+
+**Quick Test:**
+
+``` bash
+# Health check
+curl https://web-production-f8dc.up.railway.app/health
+
+# Extract text from image
+curl -X POST -F "image=@your-image.jpg" https://web-production-f8dc.up.railway.app/extract-text
+
+# Interactive API docs
+open https://web-production-f8dc.up.railway.app/docs
+```
 
 ## Support
 

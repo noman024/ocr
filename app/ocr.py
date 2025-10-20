@@ -11,9 +11,8 @@ logger = logging.getLogger(__name__)
 
 class OCRService:
     def __init__(self):
-        self.tesseract_available = self._check_tesseract()
-        if self.tesseract_available:
-            self._configure_tesseract()
+        self._check_tesseract()
+        self._configure_tesseract()
     
     def _check_tesseract(self):
         """Check if Tesseract is available"""
@@ -22,9 +21,8 @@ class OCRService:
             logger.info("Tesseract OCR initialized successfully")
             return True
         except Exception as e:
-            logger.warning(f"Tesseract not available: {e}")
-            logger.info("Running in mock mode - OCR will return placeholder text")
-            return False
+            logger.error(f"Tesseract not available: {e}")
+            raise RuntimeError("Tesseract OCR is required but not available")
     
     def _configure_tesseract(self):
         """Configure Tesseract paths for Railway deployment"""
@@ -70,9 +68,6 @@ class OCRService:
         start_time = time.time()
         
         try:
-            if not self.tesseract_available:
-                return self._mock_extract_text(image_content)
-            
             # Load image with PIL
             image = Image.open(io.BytesIO(image_content))
             
@@ -101,36 +96,8 @@ class OCRService:
             
         except Exception as e:
             logger.error(f"OCR extraction failed: {e}")
-            # Fallback to mock if Tesseract fails
-            return self._mock_extract_text(image_content)
+            raise RuntimeError(f"OCR processing failed: {str(e)}")
     
-    def _mock_extract_text(self, image_content: bytes) -> Tuple[str, float, Dict[str, Any]]:
-        """Mock OCR for testing/fallback"""
-        try:
-            # Try to get basic image info
-            with Image.open(io.BytesIO(image_content)) as img:
-                width, height = img.size
-                format_name = img.format or "unknown"
-        except:
-            width, height = 0, 0
-            format_name = "unknown"
-        
-        # Return mock text based on image size
-        if width > 1000 and height > 1000:
-            mock_text = "This is a mock OCR result for a large image. In production, this would be replaced with actual text extraction from Tesseract OCR."
-        elif width > 500:
-            mock_text = "Mock OCR result for medium image."
-        else:
-            mock_text = "Small image mock text."
-        
-        metadata = {
-            "width": width,
-            "height": height,
-            "format": format_name,
-            "mock": True
-        }
-        
-        return mock_text, 0.8, metadata
     
     def _extract_tesseract_metadata(self, data: Dict, image: Image.Image) -> Dict[str, Any]:
         """Extract metadata from Tesseract OCR response"""
@@ -140,7 +107,7 @@ class OCRService:
         metadata = {
             "text_blocks": len(text_blocks),
             "has_text": len(text_blocks) > 0,
-            "tesseract_version": str(pytesseract.get_tesseract_version()) if self.tesseract_available else "unavailable"
+            "tesseract_version": str(pytesseract.get_tesseract_version())
         }
         
         if text_blocks:
