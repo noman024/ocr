@@ -1,11 +1,31 @@
-.venv/
+# Python
 __pycache__/
-.pytest_cache/
 *.pyc
 *.pyo
-*.DS_Store
-dist/
-build/
-.env
+*.pyd
+.Python
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
 
+# Temporary files
+*.tmp
+*.temp
