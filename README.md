@@ -17,6 +17,7 @@ A FastAPI-based OCR service that extracts text from uploaded images using Tesser
 ## API Endpoints
 
 ### Extract Text from Single Image
+
 ```bash
 POST /extract-text
 ```

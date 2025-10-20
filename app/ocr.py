@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 class OCRService:
     def __init__(self):
         self.tesseract_available = self._check_tesseract()
+        if self.tesseract_available:
+            self._configure_tesseract()
     
     def _check_tesseract(self):
         """Check if Tesseract is available"""
@@ -23,6 +25,42 @@ class OCRService:
             logger.warning(f"Tesseract not available: {e}")
             logger.info("Running in mock mode - OCR will return placeholder text")
             return False
+    
+    def _configure_tesseract(self):
+        """Configure Tesseract paths for Railway deployment"""
+        import os
+        import shutil
+        
+        # Try to find tesseract binary in common locations
+        possible_paths = [
+            "/usr/bin/tesseract",
+            "/usr/local/bin/tesseract",
+            "/nix/store/*/tesseract-*/bin/tesseract",
+            shutil.which("tesseract")
+        ]
+        
+        tesseract_path = None
+        for path in possible_paths:
+            if path and os.path.exists(path):
+                tesseract_path = path
+                break
+        
+        if tesseract_path:
+            pytesseract.pytesseract.tesseract_cmd = tesseract_path
+            logger.info(f"Tesseract configured at: {tesseract_path}")
+        
+        # Set tessdata prefix if available
+        tessdata_paths = [
+            "/usr/share/tesseract-ocr/4.00/tessdata",
+            "/usr/share/tesseract-ocr/5/tessdata", 
+            "/nix/store/*/tesseract-*/share/tessdata"
+        ]
+        
+        for path in tessdata_paths:
+            if os.path.exists(path):
+                os.environ['TESSDATA_PREFIX'] = path
+                logger.info(f"Tessdata configured at: {path}")
+                break
     
     def extract_text(self, image_content: bytes) -> Tuple[str, float, Dict[str, Any]]:
         """
