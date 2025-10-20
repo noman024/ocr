@@ -1,36 +1,52 @@
 # OCR Image Text Extraction API
 
-A production-ready FastAPI-based OCR service that extracts text from uploaded images using Tesseract OCR engine. Containerized with Docker for reliable deployment across any cloud platform.
+- **Author:** MD Mutasim Billah Abu Noman Akanda 
+- **Updated:** 20 October 2025
 
-## Features
+A production-ready FastAPI service that extracts text from uploaded images using Tesseract OCR. Deployed on Railway with comprehensive error handling, rate limiting, and caching.
 
-- **Text Extraction**: Extract text from JPG, PNG, and GIF images
-- **Tesseract OCR**: High-accuracy OCR using open-source Tesseract engine
-- **Rate Limiting**: Built-in rate limiting (60 requests/minute per IP)
-- **Caching**: Intelligent caching of results to improve performance
-- **Batch Processing**: Process multiple images in a single request
-- **Metadata Extraction**: Get image dimensions, format, and text block information
-- **Error Handling**: Comprehensive error handling and validation
-- **Health Checks**: Built-in health monitoring
-- **Production Ready**: Robust error handling and logging
-- **Docker Containerized**: Standard Docker deployment for any cloud platform
-- **Path Auto-Detection**: Automatically finds Tesseract binary in various system locations
+## 🚀 Live API
 
-## API Endpoints
+**Production URL:** <https://web-production-f8dc.up.railway.app/>
 
-### Extract Text from Single Image
+**Test Command:**
+```bash
+curl -X POST -F "image=@test_image.jpg" https://web-production-f8dc.up.railway.app/extract-text
+```
 
+## 📋 Requirements Met
+
+### Core Requirements
+- ✅ JPG image uploads via POST request
+- ✅ OCR text extraction using Tesseract
+- ✅ JSON response format
+- ✅ Handle cases with no text found
+- ✅ Deployed service (Railway)
+- ✅ Public URL access
+- ✅ Comprehensive error handling
+
+### Technical Specifications
+- **Input:** JPG/PNG/GIF files (multipart/form-data)
+- **Max file size:** 10MB
+- **Response format:** JSON with success, text, confidence, processing_time_ms
+- **Supported formats:** JPG (primary), PNG, GIF (bonus)
+
+### Bonus Features
+- ✅ Multiple image formats (PNG, GIF)
+- ✅ Confidence scores
+- ✅ Rate limiting (60 requests/minute)
+- ✅ Caching (SHA-256 hash-based)
+- ✅ Batch processing
+- ✅ Image metadata extraction
+
+## 🔗 API Endpoints
+
+### Extract Text
 ```bash
 POST /extract-text
 ```
-
-**Request:**
-
-- Content-Type: `multipart/form-data`
-- Field: `image` (JPG, PNG, or GIF file, max 10MB)
-
+**Request:** `multipart/form-data` with `image` field
 **Response:**
-
 ```json
 {
   "success": true,
@@ -41,307 +57,111 @@ POST /extract-text
     "width": 800,
     "height": 600,
     "format": "JPEG",
-    "text_blocks": 3,
-    "bounding_boxes": [...]
+    "text_blocks": 3
   },
   "cached": false
 }
 ```
 
 ### Batch Processing
-
 ```bash
 POST /extract-text/batch
 ```
-
-**Request:**
-
-- Content-Type: `multipart/form-data`
-- Field: `images` (multiple image files, max 10 per batch)
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "results": [
-    {
-      "filename": "image1.jpg",
-      "response": { /* OCRResponse */ },
-      "error": null
-    }
-  ],
-  "processing_time_ms": 2500
-}
-```
+**Request:** Multiple `image` files (max 10 per batch)
 
 ### Health Check
-
 ```bash
 GET /health
 ```
 
 ### Cache Management
-
 ```bash
 GET /cache/stats
 DELETE /cache/clear
 ```
 
-## Quick Start
+## 🛠️ Implementation
 
-### Local Development
+### Technology Stack
+- **Framework:** FastAPI
+- **OCR Engine:** Tesseract OCR
+- **Deployment:** Railway (Docker containerized)
+- **Language:** Python 3.11
 
-1. **Clone and setup:**
+### Key Features
+- **File Validation:** Content-type and magic byte validation
+- **Rate Limiting:** 60 requests/minute per IP address
+- **Caching:** SHA-256 hash-based with 10-minute TTL
+- **Error Handling:** Comprehensive validation and error responses
+- **Security:** File size limits, input sanitization
 
-```bash
-git clone https://github.com/noman024/ocr.git
-cd ocr
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
+## 📊 Error Codes
 
-1. **Install Tesseract OCR:**
-
-```bash
-# Ubuntu/Debian
-sudo apt-get install tesseract-ocr tesseract-ocr-eng
-
-# macOS
-brew install tesseract
-
-# Windows
-# Download from: https://github.com/UB-Mannheim/tesseract/wiki
-```
-
-1. **Run locally:**
-
-```bash
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
-```
-
-1. **Test the API:**
-
-```bash
-curl -X POST -F "image=@sample_images/text_sample.jpg" http://localhost:8080/extract-text
-```
-
-### Docker
-
-1. **Build the image:**
-
-```bash
-docker build -t ocr-api .
-```
-
-1. **Run the container:**
-
-```bash
-docker run -p 8080:8080 ocr-api
-```
-
-## Deployment
-
-### Railway Deployment (Recommended)
-
-This API is containerized with Docker for reliable deployment.
-
-1. **Deploy to Railway:**
-   - Go to: <https://railway.app>
-   - Sign up with GitHub
-   - Click "New Project" → "Deploy from GitHub repo"
-   - Select your repository: `noman024/ocr`
-   - Railway will automatically detect the Dockerfile and deploy
-
-2. **Docker Configuration:**
-   - **Base Image**: Python 3.11-slim
-   - **Tesseract Installation**: Automatic via apt packages
-   - **Build System**: Standard Docker build
-   - **Port**: 8080 (configurable via Railway)
-
-3. **Environment Variables (Optional):**
-   - `MAX_FILE_SIZE_BYTES=10485760` (10MB)
-   - `RATE_LIMIT_REQUESTS=60`
-   - `CACHE_TTL_SECONDS=600`
-
-### Local Setup
-
-1. **Install Tesseract:**
-
-```bash
-# Ubuntu/Debian
-sudo apt-get install tesseract-ocr tesseract-ocr-eng
-
-# macOS
-brew install tesseract
-
-# Windows
-# Download from: https://github.com/UB-Mannheim/tesseract/wiki
-```
-
-1. **Run locally:**
-
-```bash
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the API
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
-```
-
-### Alternative Cloud Platforms
-
-- **Render**: Connect GitHub repo, Docker will be auto-detected
-- **Heroku**: Use included `Procfile` for deployment
-- **AWS ECS/Fargate**: Use Dockerfile for containerized deployment
-- **Google Cloud Run**: Use Dockerfile for serverless deployment
-- **Azure Container Instances**: Use Dockerfile for deployment
-
-## Testing
-
-### Railway Deployment Testing
-
-Once deployed to Railway, you'll get a public URL like `https://your-app-name.railway.app`
-
-```bash
-# Health check
-curl https://your-app-name.railway.app/health
-
-# Single image
-curl -X POST \
-  -F "image=@sample_images/text_sample.jpg" \
-  https://your-app-name.railway.app/extract-text
-
-# Batch processing
-curl -X POST \
-  -F "images=@sample_images/text_sample.jpg" \
-  -F "images=@sample_images/document_sample.jpg" \
-  https://your-app-name.railway.app/extract-text/batch
-
-# Cache statistics
-curl https://your-app-name.railway.app/cache/stats
-```
-
-### Local Testing
-
-```bash
-# Health check
-curl http://localhost:8080/health
-
-# Single image
-curl -X POST \
-  -F "image=@sample_images/text_sample.jpg" \
-  http://localhost:8080/extract-text
-```
-
-### Using Python
-
-```python
-import requests
-
-# Railway deployment
-base_url = "https://your-app-name.railway.app"
-
-# Health check
-response = requests.get(f"{base_url}/health")
-print(response.json())
-
-# Single image
-with open('sample_images/text_sample.jpg', 'rb') as f:
-    files = {'image': f}
-    response = requests.post(f'{base_url}/extract-text', files=files)
-    print(response.json())
-
-# Batch processing
-files = []
-for filename in ['text_sample.jpg', 'document_sample.jpg']:
-    files.append(('images', open(f'sample_images/{filename}', 'rb')))
-
-response = requests.post(f'{base_url}/extract-text/batch', files=files)
-print(response.json())
-```
-
-### Interactive API Documentation
-
-- **Railway**: `https://your-app-name.railway.app/docs`
-- **Local**: `http://localhost:8080/docs`
-
-## Configuration
-
-The API can be configured using environment variables:
-
-- `MAX_FILE_SIZE_BYTES`: Maximum file size (default: 10485760 = 10MB)
-- `RATE_LIMIT_REQUESTS`: Requests per window (default: 60)
-- `RATE_LIMIT_WINDOW_SECONDS`: Rate limit window (default: 60)
-- `CACHE_TTL_SECONDS`: Cache TTL (default: 600)
-- `CACHE_MAX_ITEMS`: Maximum cache items (default: 512)
-- `OCR_TIMEOUT_SECONDS`: OCR processing timeout (default: 15)
-
-## Error Codes
-
-- `400`: Bad Request (invalid file format, missing file, etc.)
-- `413`: Payload Too Large (file exceeds size limit)
+- `400`: Bad Request (invalid file format, missing file)
+- `413`: Payload Too Large (file exceeds 10MB limit)
 - `422`: Unprocessable Entity (OCR processing failed)
 - `429`: Too Many Requests (rate limit exceeded)
 - `500`: Internal Server Error
 
-## Rate Limiting
+## 🧪 Testing
 
-- **Limit**: 60 requests per minute per IP address
-- **Headers**: `X-RateLimit-Remaining`, `X-RateLimit-Limit`
-- **Response**: 429 status code when exceeded
-
-## Caching
-
-- **Strategy**: SHA-256 hash-based caching
-- **TTL**: 10 minutes (configurable)
-- **Max Items**: 512 (configurable)
-- **Benefits**: Faster response times for identical images
-
-## Monitoring and Logging
-
-- **Structured Logging**: JSON format for Cloud Logging
-- **Health Checks**: Built-in `/health` endpoint
-- **Metrics**: Processing time, cache hits, error rates
-- **Cloud Run**: Automatic scaling and monitoring
-
-## Cost Optimization
-
-- **Free Tier**: Unlimited Tesseract OCR processing
-- **Cloud Run**: 2 million requests/month free
-- **Caching**: Reduces OCR processing for duplicate images
-- **Production Ready**: Robust error handling and logging
-
-## Security
-
-- **File Validation**: Content-type and magic byte validation
-- **Size Limits**: Prevents large file uploads
-- **Rate Limiting**: Prevents abuse
-- **Input Sanitization**: Validates all inputs
-- **Non-root Container**: Runs as non-privileged user
-
-## Development
-
-### Running Tests
-
+### Health Check
 ```bash
-# Install test dependencies
-pip install pytest pytest-asyncio
-
-# Run tests
-pytest tests/ -v
+curl https://web-production-f8dc.up.railway.app/health
 ```
 
-### Code Structure
+### Single Image
+```bash
+curl -X POST -F "image=@your-image.jpg" https://web-production-f8dc.up.railway.app/extract-text
+```
 
-```text
+### Batch Processing
+```bash
+curl -X POST -F "images=@image1.jpg" -F "images=@image2.jpg" https://web-production-f8dc.up.railway.app/extract-text/batch
+```
+
+### Interactive Documentation
+Visit: <https://web-production-f8dc.up.railway.app/docs>
+
+## 🚀 Local Development
+
+### Prerequisites
+- Python 3.11+
+- Tesseract OCR
+
+### Setup
+```bash
+# Clone repository
+git clone https://github.com/noman024/ocr.git
+cd ocr
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install Tesseract
+# Ubuntu/Debian: sudo apt-get install tesseract-ocr tesseract-ocr-eng
+# macOS: brew install tesseract
+# Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki
+
+# Run locally
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
+```
+
+### Docker
+```bash
+# Build and run
+docker build -t ocr-api .
+docker run -p 8080:8080 ocr-api
+```
+
+## 📁 Project Structure
+
+```
 app/
-├── __init__.py
 ├── main.py          # FastAPI application
 ├── config.py        # Configuration settings
 ├── models.py        # Pydantic models
@@ -351,77 +171,40 @@ app/
 ├── cache.py        # Caching logic
 └── logging_setup.py # Logging configuration
 
-tests/
-├── __init__.py
-└── test_api.py     # API tests
-
-sample_images/      # Test images
 Dockerfile          # Container configuration
 requirements.txt    # Python dependencies
-README.md          # This file
+railway.toml        # Railway deployment config
 ```
 
-## License
+## 🔧 Configuration
 
-MIT License - see LICENSE file for details.
+Environment variables:
+- `MAX_FILE_SIZE_BYTES`: Maximum file size (default: 10485760)
+- `RATE_LIMIT_REQUESTS`: Requests per window (default: 60)
+- `CACHE_TTL_SECONDS`: Cache TTL (default: 600)
+- `PORT`: Server port (default: 8080)
 
-## Docker Deployment Features
+## 📈 Performance
 
-### Automatic Tesseract Configuration
+- **Rate Limiting:** 60 requests/minute per IP
+- **Caching:** Reduces processing for duplicate images
+- **Batch Processing:** Up to 10 images per request
+- **Response Time:** Typically < 2 seconds per image
 
-The API automatically detects and configures Tesseract OCR in containerized environments:
+## 🔒 Security
 
-- **Binary Detection**: Searches common Tesseract installation paths
-- **Tessdata Configuration**: Sets up language data paths
-- **Error Handling**: Graceful error handling with detailed logging
-- **Logging**: Comprehensive logging for debugging deployment issues
+- File format validation (magic bytes)
+- File size limits (10MB maximum)
+- Rate limiting per IP address
+- Input sanitization and validation
+- Non-root container execution
 
-### Deployment Troubleshooting
+## 📝 License
 
-1. **Docker Build Issues**:
-   - **Error**: `Package 'libgl1-mesa-glx' has no installation candidate`
-   - **Solution**: Simplified Dockerfile with only essential tesseract packages
-   - **Packages**: Only `tesseract-ocr` and `tesseract-ocr-eng` for minimal dependencies
+MIT License
 
-2. **Build Failures**:
-   - Check Docker build logs for package installation errors
-   - Verify Dockerfile syntax and base image
-   - Ensure Python 3.11 compatibility
-   - Check for sufficient build resources
+---
 
-3. **Tesseract Issues**:
-   - Check logs for Tesseract path configuration
-   - Verify OCR service initialization
-   - Test with health check endpoint
-
-4. **Performance**:
-   - Monitor container metrics for memory/CPU usage
-   - Check rate limiting and caching statistics
-   - Review processing time logs
-
-## Live API
-
-**🚀 Production API:** <https://web-production-f8dc.up.railway.app/>
-
-**Quick Test:**
-
-``` bash
-# Health check
-curl https://web-production-f8dc.up.railway.app/health
-
-# Extract text from image
-curl -X POST -F "image=@your-image.jpg" https://web-production-f8dc.up.railway.app/extract-text
-
-# Interactive API docs
-open https://web-production-f8dc.up.railway.app/docs
-```
-
-## Support
-
-For issues and questions:
-
-1. Check the deployment logs (Railway, Docker, etc.)
-2. Verify Tesseract OCR installation and configuration
-3. Test with sample images provided
-4. Check rate limiting and caching status
-5. Review container metrics and performance
+**GitHub Repository:** <https://github.com/noman024/ocr> \
+**Live API:** <https://web-production-f8dc.up.railway.app/> \
+**API Documentation:** <https://web-production-f8dc.up.railway.app/docs>
