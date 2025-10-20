@@ -5,14 +5,114 @@
 
 A production-ready FastAPI service that extracts text from uploaded images using Tesseract OCR. Deployed on Railway with comprehensive error handling, rate limiting, and caching.
 
-## 🚀 Live API
+## 📋 Deliverables
 
-**Production URL:** <https://web-production-f8dc.up.railway.app/>
+### 1. Public URL of Deployed Service
+**Live API:** <https://web-production-f8dc.up.railway.app/>
 
-**Test Command:**
+### 2. API Documentation
+
+#### HTTP Method and Endpoint
+- **Method:** POST
+- **Endpoint:** `/extract-text`
+
+#### Request Format
+- **Content-Type:** `multipart/form-data`
+- **Field:** `image` (JPG/PNG/GIF file, max 10MB)
+
+#### Response Format
+```json
+{
+  "success": true,
+  "text": "extracted text content here",
+  "confidence": 0.95,
+  "processing_time_ms": 1234,
+  "metadata": {
+    "width": 800,
+    "height": 600,
+    "format": "JPEG",
+    "text_blocks": 3
+  },
+  "cached": false
+}
+```
+
+#### Error Codes
+- `400`: Bad Request (invalid file format, missing file)
+- `413`: Payload Too Large (file exceeds 10MB limit)
+- `422`: Unprocessable Entity (OCR processing failed)
+- `429`: Too Many Requests (rate limit exceeded)
+- `500`: Internal Server Error
+
+#### Example curl Command for Testing
 ```bash
 curl -X POST -F "image=@test_image.jpg" https://web-production-f8dc.up.railway.app/extract-text
 ```
+
+### 3. Implementation Explanation
+
+#### OCR Service/Library Used
+- **Primary OCR Engine:** Tesseract OCR (open-source)
+- **Python Integration:** pytesseract library
+- **Language Support:** English (tesseract-ocr-eng)
+- **Alternative Considered:** Google Cloud Vision API (switched due to billing requirements)
+
+#### File Upload and Validation
+- **Upload Method:** FastAPI's `UploadFile` with `multipart/form-data`
+- **File Validation:**
+  - Content-type validation (MIME type checking)
+  - Magic byte validation (file signature verification)
+  - File size limits (10MB maximum)
+  - Format validation (JPG, PNG, GIF support)
+- **Security Measures:**
+  - Input sanitization
+  - File size enforcement
+  - Format whitelist validation
+
+#### Deployment Strategy
+- **Platform:** Railway (cloud deployment platform)
+- **Containerization:** Docker with Python 3.11-slim base image
+- **Build Process:** Automated Docker build from GitHub repository
+- **Configuration:** Environment variable handling for PORT and other settings
+- **Monitoring:** Built-in health checks and logging
+- **Scaling:** Automatic scaling based on demand
+
+### 4. GitHub Repository
+
+#### Complete Source Code
+- **Repository:** <https://github.com/noman024/ocr>
+- **Structure:**
+  ```
+  app/
+  ├── main.py          # FastAPI application
+  ├── config.py        # Configuration settings
+  ├── models.py        # Pydantic models
+  ├── ocr.py          # OCR service integration
+  ├── utils.py        # Utility functions
+  ├── rate_limit.py   # Rate limiting
+  ├── cache.py        # Caching logic
+  └── logging_setup.py # Logging configuration
+  ```
+
+#### Dockerfile
+- **Base Image:** Python 3.11-slim
+- **System Dependencies:** Tesseract OCR and language packs
+- **Optimization:** Multi-stage build for production
+- **Security:** Non-root user execution
+
+#### README with Setup Instructions
+- **Local Development:** Virtual environment setup
+- **Dependencies:** Requirements installation
+- **Testing:** Sample image testing
+- **Deployment:** Railway deployment guide
+
+#### Sample Test Images
+- **text_sample.jpg:** Basic OCR testing
+- **document_sample.jpg:** Multi-line document processing
+- **low_contrast.jpg:** Edge case testing
+- **mixed_content.jpg:** Complex content handling
+- **no_text.jpg:** No-text scenario testing
+- **create_samples.py:** Image generation script
 
 ## 📋 Requirements Met
 
@@ -105,19 +205,24 @@ DELETE /cache/clear
 
 ## 🧪 Testing
 
+### Using Sample Test Images
+```bash
+# Basic text extraction
+curl -X POST -F "image=@sample_images/text_sample.jpg" https://web-production-f8dc.up.railway.app/extract-text
+
+# Document processing
+curl -X POST -F "image=@sample_images/document_sample.jpg" https://web-production-f8dc.up.railway.app/extract-text
+
+# Edge case testing
+curl -X POST -F "image=@sample_images/no_text.jpg" https://web-production-f8dc.up.railway.app/extract-text
+
+# Batch processing
+curl -X POST -F "images=@sample_images/text_sample.jpg" -F "images=@sample_images/document_sample.jpg" https://web-production-f8dc.up.railway.app/extract-text/batch
+```
+
 ### Health Check
 ```bash
 curl https://web-production-f8dc.up.railway.app/health
-```
-
-### Single Image
-```bash
-curl -X POST -F "image=@your-image.jpg" https://web-production-f8dc.up.railway.app/extract-text
-```
-
-### Batch Processing
-```bash
-curl -X POST -F "images=@image1.jpg" -F "images=@image2.jpg" https://web-production-f8dc.up.railway.app/extract-text/batch
 ```
 
 ### Interactive Documentation
