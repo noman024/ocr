@@ -1,6 +1,6 @@
 # OCR Image Text Extraction API
 
-A production-ready FastAPI-based OCR service that extracts text from uploaded images using Tesseract OCR engine. Optimized for Railway deployment with comprehensive features and robust error handling.
+A production-ready FastAPI-based OCR service that extracts text from uploaded images using Tesseract OCR engine. Containerized with Docker for reliable deployment across any cloud platform.
 
 ## Features
 
@@ -13,7 +13,7 @@ A production-ready FastAPI-based OCR service that extracts text from uploaded im
 - **Error Handling**: Comprehensive error handling and validation
 - **Health Checks**: Built-in health monitoring
 - **Mock Mode**: Fallback to mock OCR when Tesseract is unavailable
-- **Railway Optimized**: Configured for Railway deployment with automatic Tesseract installation
+- **Docker Containerized**: Standard Docker deployment for any cloud platform
 - **Path Auto-Detection**: Automatically finds Tesseract binary in various system locations
 
 ## API Endpoints
@@ -132,20 +132,20 @@ docker run -p 8080:8080 ocr-api
 
 ### Railway Deployment (Recommended)
 
-This API is optimized for Railway deployment with automatic Tesseract OCR installation.
+This API is containerized with Docker for reliable deployment.
 
 1. **Deploy to Railway:**
    - Go to: https://railway.app
    - Sign up with GitHub
    - Click "New Project" → "Deploy from GitHub repo"
    - Select your repository: `noman024/ocr`
-   - Railway will automatically detect the Python app and deploy
+   - Railway will automatically detect the Dockerfile and deploy
 
-2. **Railway Configuration:**
-   - **Build System**: Nixpacks (configured in `nixpacks.toml`)
-   - **Tesseract Installation**: Automatic via Nix packages
-   - **Python Version**: 3.11 (specified in `runtime.txt`)
-   - **Start Command**: Configured in `Procfile`
+2. **Docker Configuration:**
+   - **Base Image**: Python 3.11-slim
+   - **Tesseract Installation**: Automatic via apt packages
+   - **Build System**: Standard Docker build
+   - **Port**: 8080 (configurable via Railway)
 
 3. **Environment Variables (Optional):**
    - `MAX_FILE_SIZE_BYTES=10485760` (10MB)
@@ -181,9 +181,11 @@ python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
 
 ### Alternative Cloud Platforms
 
-- **Render**: Connect GitHub repo, set build/start commands
+- **Render**: Connect GitHub repo, Docker will be auto-detected
 - **Heroku**: Use included `Procfile` for deployment
-- **Docker**: Use included `Dockerfile` for containerized deployment
+- **AWS ECS/Fargate**: Use Dockerfile for containerized deployment
+- **Google Cloud Run**: Use Dockerfile for serverless deployment
+- **Azure Container Instances**: Use Dockerfile for deployment
 
 ## Testing
 
@@ -348,51 +350,45 @@ README.md          # This file
 
 MIT License - see LICENSE file for details.
 
-## Railway-Specific Features
+## Docker Deployment Features
 
 ### Automatic Tesseract Configuration
 
-The API automatically detects and configures Tesseract OCR in Railway's environment:
+The API automatically detects and configures Tesseract OCR in containerized environments:
 
 - **Binary Detection**: Searches common Tesseract installation paths
 - **Tessdata Configuration**: Sets up language data paths
 - **Fallback Mode**: Gracefully falls back to mock OCR if Tesseract unavailable
 - **Logging**: Comprehensive logging for debugging deployment issues
 
-### Railway Deployment Troubleshooting
+### Deployment Troubleshooting
 
-1. **Python Detection Issues**:
-   - **Error**: `pip: command not found`
-   - **Solution**: Railway now includes explicit Python setup in `nixpacks.toml`
-   - **Files**: `.python-version`, `pyproject.toml` help with detection
-   - **Fallback**: Simplified Dockerfile available if nixpacks fails
-
-2. **Docker Package Issues**:
+1. **Docker Build Issues**:
    - **Error**: `Package 'libgl1-mesa-glx' has no installation candidate`
    - **Solution**: Simplified Dockerfile with only essential tesseract packages
    - **Packages**: Only `tesseract-ocr` and `tesseract-ocr-eng` for minimal dependencies
 
-3. **Build Failures**:
-   - Check Railway logs for Nix package installation errors
-   - Verify `nixpacks.toml` configuration
+2. **Build Failures**:
+   - Check Docker build logs for package installation errors
+   - Verify Dockerfile syntax and base image
    - Ensure Python 3.11 compatibility
-   - Try switching to Docker build if nixpacks fails
+   - Check for sufficient build resources
 
-4. **Tesseract Issues**:
+3. **Tesseract Issues**:
    - Check logs for Tesseract path configuration
    - Verify OCR service initialization
    - Test with health check endpoint
 
-5. **Performance**:
-   - Monitor Railway metrics for memory/CPU usage
+4. **Performance**:
+   - Monitor container metrics for memory/CPU usage
    - Check rate limiting and caching statistics
    - Review processing time logs
 
 ## Support
 
 For issues and questions:
-1. Check the Railway deployment logs
+1. Check the deployment logs (Railway, Docker, etc.)
 2. Verify Tesseract OCR installation and configuration
 3. Test with sample images provided
 4. Check rate limiting and caching status
-5. Review Railway metrics and performance
+5. Review container metrics and performance
